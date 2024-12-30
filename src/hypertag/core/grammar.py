@@ -35,7 +35,7 @@ try_short        =  '?' ws (block_struct / body_control)?       # short version 
 block_expr       =  mark_eval expr_assign
 block_assign     =  mark_eval ws targets ws op_inplace? '=' expr_assign
 expr_assign      =  ws (expr_augment / embedding) inline_comment?
-op_inplace       =  ~"//|\%%|<<|>>|[-+*/&|^]"
+op_inplace       =  ~"//|\\%%|<<|>>|[-+*/&|^]"
 
 block_while      =  'while' clause_if clause_else?
 block_for        =  'for' space targets space 'in' space tail_for clause_else?
@@ -61,7 +61,7 @@ attr_def         =  name_id (ws '=' ws value_of_attr)?
 
 block_context    =  'context' space cntx_import (comma cntx_import)* inline_comment?
 block_import     =  'from' space path_import space 'import' space item_import (comma item_import)* inline_comment?
-path_import      =  ~"[^\s\x22\x27]+"                           # import path can be ANY string of 1+ characters unless it contains a whitespace, ' or "
+path_import      =  ~"[^\\s\x22\x27]+"                           # import path can be ANY string of 1+ characters unless it contains a whitespace, ' or "
 item_import      =  wild_import / name_import
 wild_import      =  '*'
 cntx_import      =  symbol rename?
@@ -231,7 +231,7 @@ trailer_filt =  index / member                  # reduced form of `trailer` for 
 partial_call =  '(' ws (args ws)? ')'
 filter       =  factor_filt partial_call?       # no space is allowed between the function and its arguments
 
-qualifier    =  ~"[\?!]"                        # ? means that None/empty(false)/exceptions shall be converted to '' ... ! means that empty (false) value triggers exception
+qualifier    =  ~"[\\?!]"                        # ? means that None/empty(false)/exceptions shall be converted to '' ... ! means that empty (false) value triggers exception
 # obligatory   =  '!'
 # optional     =  '?'
 
@@ -246,7 +246,7 @@ op_shift     =  '<<' / '>>'
 op_empty     =  '?' / '!'
 
 not          =  'not'
-op_comp      =  ~"==|!=|<>|>=|<=|<|>|not\s+in|is\s+not|in|is"
+op_comp      =  ~"==|!=|<>|>=|<=|<|>|not\\s+in|is\\s+not|in|is"
 
 ###  IDENTIFIERS
 
@@ -264,7 +264,7 @@ name_xml         =  ~"[%(XML_StartChar)s]([%(XML_Char)s]*[%(XML_EndChar)s])?"i
 literal          =  number / string / boolean / none
 
 number_signed    =  ~"[+-]?" number
-number           =  ~"((\.\d+)|(\d+(\.\d*)?))([eE][+-]?\d+)?"      # the leading +- is added during expression construction (<neg>)
+number           =  ~"((\\.\\d+)|(\\d+(\\.\\d*)?))([eE][+-]?\\d+)?"      # the leading +- is added during expression construction (<neg>)
 #string           =  ~"'[^']*'" / ~'"[^"]*"'         # '...' or "..." string; no escaping of ' and " inside!
 boolean          =  'True' / 'False'
 none             =  'None'
@@ -279,7 +279,7 @@ string_quot2     =  '"' (escape / embedding / text_quot2)* '"'
 
 ###  BASIC TOKENS
 
-escape      =  ~'\$\$|{{|}}'                 # escape sequences: $$ {{ }}
+escape      =  ~'\\$\\$|{{|}}'                 # escape sequences: $$ {{ }}
 
 verbatim    =  ~"[^%(INDENT_S)s%(DEDENT_S)s%(INDENT_T)s%(DEDENT_T)s\n]+"su       # 1 line of plain text, may include special symbols (left unparsed)
 text        =  ~"[^%(INDENT_S)s%(DEDENT_S)s%(INDENT_T)s%(DEDENT_T)s\n${}]+"su    # 1 line of plain text, excluded $ { }
@@ -332,4 +332,3 @@ def IS_TAG(symbol):
 
 def IS_VAR(symbol):
     return symbol.startswith(MARK_VAR)
-
